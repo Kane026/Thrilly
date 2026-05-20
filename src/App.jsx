@@ -1,45 +1,12 @@
-import { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { Routes, Route } from "react-router-dom";
+import SignupPage from "./SignupPage";
+import Home from "./Home";
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
-);
-
-export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-  };
-
+export default function App() {
   return (
-    <div>
-      <h1>Sign Up</h1>
-
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button type="submit">Sign Up</button>
-      </form>
-    </div>
+    <Routes>
+      <Route path="/" element={<SignupPage />} />
+      <Route path="/home" element={<Home />} />
+    </Routes>
   );
 }
