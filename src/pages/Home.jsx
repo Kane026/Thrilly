@@ -3,12 +3,17 @@ import Header from "../components/Header";
 import { useState } from "react";
 import {useSession} from "../hooks/useSession";
 import {supabase} from "../supabase";
+import { useEffect } from "react";
+import Post from "../components/Post";
 
 export default function Home() {
 
   const [content, setContent] = useState("");
+  
+  const [posts, setPosts] = useState([]);
 
   const session = useSession();
+
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -20,7 +25,20 @@ export default function Home() {
 
   if (!error) setContent("");
 
+  fetchPosts();
+
 };
+
+  const fetchPosts = async () => {
+    const {data, error} = await supabase.from("posts").select("*").order("created_at", {ascending: false});
+
+    if (!error) setPosts(data);
+  }
+
+  useEffect(() => {
+    fetchPosts();
+  })
+
 
 
   return(
@@ -37,7 +55,16 @@ export default function Home() {
     />
     <button>Post!</button>
    </form>
-    </div>
+   {posts.map((post) => (
+    
+    <Post
+      key={post.id}
+      user_id={post.user_id}
+      content={post.content}
+      date={post.created_at}
+     />
+    ))}
+   </div>
    
 
 
