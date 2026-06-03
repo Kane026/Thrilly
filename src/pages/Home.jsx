@@ -12,7 +12,7 @@ export default function Home() {
   
   const [posts, setPosts] = useState([]);
 
-  const session = useSession();
+  const {session, loading} = useSession();
 
 
   const submitHandler = async (event) => {
@@ -39,6 +39,12 @@ export default function Home() {
     fetchPosts();
   })
 
+const handleDelete = async (id) => {
+  const {error} = await supabase.from("posts").delete().eq("id", id);
+
+  if (!error) fetchPosts();
+};
+
 
 
   return(
@@ -62,6 +68,10 @@ export default function Home() {
       user_id={post.user_id}
       content={post.content}
       date={post.created_at}
+      currentUserId={session?.sub}
+      onDelete={
+        post.user_id === session?.sub ? () => handleDelete(post.id) : undefined
+      }
      />
     ))}
    </div>
