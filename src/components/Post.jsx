@@ -1,4 +1,4 @@
-export default function Post({user_id, content, date, onDelete, currentUserId}) {
+export default function Post({user_id, content, date, onDelete, currentUserId, imageUrl}) {
 return (
     <div>
         <p>{content}</p>
@@ -7,6 +7,9 @@ return (
         {currentUserId === user_id && (
             <button onClick={onDelete}>Delete</button>
         )}
+        <hr />
+        {imageUrl && <img src={imageUrl}/>}
     </div>
     );
 }
+
