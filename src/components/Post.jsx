@@ -1,4 +1,4 @@
-export default function Post({ user_id, content, date, onDelete, currentUserId }) {
+export default function Post({ user_id, content, date, onDelete, currentUserId, imageUrl }) {
   return (
     <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
       <div className="flex items-center gap-3 mb-3">
@@ -11,10 +11,13 @@ export default function Post({ user_id, content, date, onDelete, currentUserId }
         </div>
       </div>
       <p className="text-gray-700 mb-3">{content}</p>
+      {imageUrl && (
+        <img src={imageUrl} alt="post afbeelding" className="mt-3 rounded-lg w-full object-cover" />
+      )}
       {currentUserId === user_id && (
         <button
           onClick={onDelete}
-          className="text-red-400 text-xs hover:text-red-600"
+          className="mt-3 text-red-400 text-xs hover:text-red-600"
         >
           Verwijderen
         </button>

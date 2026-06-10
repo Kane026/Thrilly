@@ -7,16 +7,40 @@ import Post from "../components/Post";
 export default function Home() {
   const [content, setContent] = useState("");
   const [posts, setPosts] = useState([]);
-  const { session } = useSession();
+  const [image, setImage] = useState(null);
+  const { session, loading } = useSession();
 
   const submitHandler = async (event) => {
     event.preventDefault();
+
+    let imageUrl = null;
+
+    if (image) {
+      const fileName = `${session.sub}-${Date.now()}`;
+      const { error: uploadError } = await supabase.storage
+        .from("posts")
+        .upload(fileName, image);
+
+      if (uploadError) {
+        console.error(uploadError);
+        return;
+      }
+
+      const { data } = supabase.storage.from("posts").getPublicUrl(fileName);
+      imageUrl = data.publicUrl;
+    }
+
     const { error } = await supabase.from("posts").insert({
       user_id: session.sub,
-      content: content
+      content: content,
+      image_url: imageUrl,
     });
-    if (!error) setContent("");
-    fetchPosts();
+
+    if (!error) {
+      setContent("");
+      setImage(null);
+      fetchPosts();
+    }
   };
 
   const fetchPosts = async () => {
@@ -46,7 +70,13 @@ export default function Home() {
               className="w-full bg-gray-50 rounded-lg p-3 text-gray-700 resize-none outline-none text-sm"
               placeholder="Deel je pretpark beleving..."
             />
-            <div className="flex justify-end mt-2">
+            <div className="flex justify-between items-center mt-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImage(e.target.files[0])}
+                className="text-sm text-gray-500"
+              />
               <button className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 font-semibold text-sm">
                 Posten
               </button>
@@ -60,6 +90,7 @@ export default function Home() {
               user_id={post.user_id}
               content={post.content}
               date={post.created_at}
+              imageUrl={post.image_url}
               currentUserId={session?.sub}
               onDelete={
                 post.user_id === session?.sub ? () => handleDelete(post.id) : undefined
