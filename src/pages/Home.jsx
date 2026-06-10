@@ -7,7 +7,7 @@ import Post from "../components/Post";
 export default function Home() {
   const [content, setContent] = useState("");
   const [posts, setPosts] = useState([]);
-  const { session, loading } = useSession();
+  const { session } = useSession();
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -34,33 +34,39 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50">
       <Header />
-      <form onSubmit={submitHandler} className="mb-8">
-        <textarea
-          rows="4"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="w-full bg-white rounded-lg p-3 text-gray-800 resize-none"
-          placeholder="Wat wil je delen?"
-        />
-        <button className="mt-2 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 font-semibold">
-          Post!
-        </button>
-      </form>
-      <div className="flex flex-col gap-4">
-        {posts.map((post) => (
-          <Post
-            key={post.id}
-            user_id={post.user_id}
-            content={post.content}
-            date={post.created_at}
-            currentUserId={session?.sub}
-            onDelete={
-              post.user_id === session?.sub ? () => handleDelete(post.id) : undefined
-            }
-          />
-        ))}
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+          <form onSubmit={submitHandler}>
+            <textarea
+              rows="3"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full bg-gray-50 rounded-lg p-3 text-gray-700 resize-none outline-none text-sm"
+              placeholder="Deel je pretpark beleving..."
+            />
+            <div className="flex justify-end mt-2">
+              <button className="bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 font-semibold text-sm">
+                Posten
+              </button>
+            </div>
+          </form>
+        </div>
+        <div className="flex flex-col gap-4">
+          {posts.map((post) => (
+            <Post
+              key={post.id}
+              user_id={post.user_id}
+              content={post.content}
+              date={post.created_at}
+              currentUserId={session?.sub}
+              onDelete={
+                post.user_id === session?.sub ? () => handleDelete(post.id) : undefined
+              }
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
