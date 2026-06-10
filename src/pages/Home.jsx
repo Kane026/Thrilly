@@ -1,15 +1,11 @@
-import { Routes, Route } from "react-router";
 import Header from "../components/Header";
-import { useState } from "react";
-import {useSession} from "../hooks/useSession";
-import {supabase} from "../supabase";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "../hooks/useSession";
+import { supabase } from "../supabase";
 import Post from "../components/Post";
 
 export default function Home() {
-
   const [content, setContent] = useState("");
-  
   const [posts, setPosts] = useState([]);
 
   const {session, loading} = useSession();
@@ -57,14 +53,13 @@ export default function Home() {
 
 
   const fetchPosts = async () => {
-    const {data, error} = await supabase.from("posts").select("*").order("created_at", {ascending: false});
-
+    const { data, error } = await supabase.from("posts").select("*").order("created_at", { ascending: false });
     if (!error) setPosts(data);
-  }
+  };
 
   useEffect(() => {
     fetchPosts();
-  })
+  }, []);
 
 const handleDelete = async (id) => {
   const {error} = await supabase.from("posts").delete().eq("id", id);
@@ -106,5 +101,44 @@ const handleDelete = async (id) => {
      />
     ))}
    </div>
+  const handleDelete = async (id) => {
+    const { error } = await supabase.from("posts").delete().eq("id", id);
+    if (!error) fetchPosts();
+  };
+
+  return (
+    <div className="max-w-xl mx-auto px-4 py-8">
+      <Header />
+      <form onSubmit={submitHandler} className="mb-8">
+        <textarea
+          rows="4"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="w-full bg-white rounded-lg p-3 text-gray-800 resize-none"
+          placeholder="Wat wil je delen?"
+        />
+            <input type="file"
+          accept="image/*"
+          onChange={(e) => setImage(e.target.files[0])}
+          />
+        <button className="mt-2 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 font-semibold">
+          Post!
+        </button>
+      </form>
+      <div className="flex flex-col gap-4">
+        {posts.map((post) => (
+          <Post
+            key={post.id}
+            user_id={post.user_id}
+            content={post.content}
+            date={post.created_at}
+            currentUserId={session?.sub}
+            onDelete={
+              post.user_id === session?.sub ? () => handleDelete(post.id) : undefined
+            }
+          />
+        ))}
+      </div>
+    </div>
   );
 }
