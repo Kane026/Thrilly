@@ -17,6 +17,7 @@ export default function AccountPage() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [postCount, setPostCount] = useState(0);
 
   // Haal de ingelogde gebruiker en zijn profiel op bij het laden
   useEffect(() => {
@@ -32,6 +33,13 @@ export default function AccountPage() {
           setAvatarUrl(data.avatar_url || "");
         }
       });
+
+      // Tel het aantal posts van de gebruiker
+      supabase
+        .from("posts")
+        .select("id", { count: "exact" })
+        .eq("user_id", user.id)
+        .then(({ count }) => setPostCount(count || 0));
     });
   }, []);
 
@@ -105,7 +113,7 @@ export default function AccountPage() {
           {/* Statistieken rij */}
           <div className="grid grid-cols-3 gap-4 mt-8">
             <StatCard label="Parken Gevolgd" value={gevolgdeParken.length} color="purple" />
-            <StatCard label="Posts" value={0} color="pink" />
+            <StatCard label="Posts" value={postCount} color="pink" />
             <StatCard label="Reacties" value={0} color="blue" />
           </div>
         </div>

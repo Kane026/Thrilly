@@ -1,13 +1,8 @@
-// Auth.jsx
-// Dit component verwerkt drie modi: inloggen, registreren en wachtwoord vergeten.
-// Geef de gewenste modus mee via de 'mode' prop, bijvoorbeeld: <Auth mode="login" />
-// De routing in App.jsx bepaalt welke modus wordt getoond.
-
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router';
 import { supabase } from '../supabase';
 import { useSession } from '../hooks/useSession';
-import './Auth.css';
+import logo from '../assets/thrillylogo.jpg';
 
 export default function Auth({ mode = 'login' }) {
   const [email, setEmail] = useState('');
@@ -29,88 +24,87 @@ export default function Auth({ mode = 'login' }) {
     setLoading(true);
 
     if (mode === 'login') {
-      // Inloggen met e-mail en wachtwoord
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setError(error.message);
       else navigate('/');
     }
 
     if (mode === 'register') {
-      // Nieuw account aanmaken
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) setError(error.message);
       else setMessage('Account aangemaakt! Je kunt nu inloggen.');
     }
 
-    // Wachtwoord vergeten functionaliteit is voorlopig uitgezet, maar hier is hoe het zou werken:
-    // if (mode === 'forgot') {
-    //   // Stuur een wachtwoord-reset e-mail
-    //   const { error } = await supabase.auth.resetPasswordForEmail(email);
-    //   if (error) setError(error.message);
-    //   else setMessage('Controleer je e-mail voor een resetlink.');
-    // }
-
     setLoading(false);
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h1>
-          {mode === 'login' && 'Inloggen'}
-          {mode === 'register' && 'Account aanmaken'}
-          {/* {mode === 'forgot' && 'Wachtwoord vergeten'} */}
-        </h1>
+    // Achtergrond met paars/roze gradient
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-red-400">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-10">
 
-        <form onSubmit={handleSubmit}>
-          <div className="auth-field">
-            <label>E-mail</label>
+        {/* Logo en titel */}
+        <div className="flex flex-col items-center mb-8">
+          <img src={logo} alt="Thrilly" className="h-14 w-14 rounded-xl object-cover mb-3" />
+          <h1 className="text-3xl font-extrabold text-purple-600 tracking-tight">Thrilly</h1>
+          <p className="text-gray-400 text-sm mt-1">
+            {mode === 'login' ? 'Welkom terug!' : 'Maak een account aan'}
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email veld */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="jij@voorbeeld.nl"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
           </div>
 
-          {mode !== 'forgot' && (
-            <div className="auth-field">
-              <label>Wachtwoord</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-              />
-            </div>
-          )}
+          {/* Wachtwoord veld */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Wachtwoord</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="••••••••"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+          </div>
 
-          {error && <p className="auth-error">{error}</p>}
-          {message && <p className="auth-message">{message}</p>}
+          {/* Fout- en succesmeldingen */}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {message && <p className="text-green-500 text-sm">{message}</p>}
 
-          <button type="submit" disabled={loading} className="auth-button">
-            {loading ? 'Even wachten...' : (
-              <>
-                {mode === 'login' && 'Inloggen'}
-                {mode === 'register' && 'Account aanmaken'}
-                {/* {mode === 'forgot' && 'Resetmail versturen'} */}
-              </>
-            )}
+          {/* Submit knop */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold py-2.5 rounded-lg hover:opacity-90 transition disabled:opacity-50"
+          >
+            {loading ? 'Even wachten...' : mode === 'login' ? 'Inloggen' : 'Account aanmaken'}
           </button>
         </form>
 
-        <div className="auth-links">
+        {/* Links naar register/login */}
+        <div className="mt-6 text-center text-sm">
           {mode === 'login' && (
-            <>
-              <a href="/register">Nog geen account? Registreer hier</a>
-              {/* Wachtwoord vergeten zetten we even uit */}
-              {/* <a href="/forgot">Wachtwoord vergeten?</a> */}
-            </>
+            <a href="/register" className="text-purple-500 hover:underline">
+              Nog geen account? Registreer hier
+            </a>
           )}
-          {mode === 'register' && <a href="/login">Al een account? Log hier in</a>}
-          {/* {mode === 'forgot' && <a href="/login">Terug naar inloggen</a>} */}
+          {mode === 'register' && (
+            <a href="/login" className="text-purple-500 hover:underline">
+              Al een account? Log hier in
+            </a>
+          )}
         </div>
       </div>
     </div>
