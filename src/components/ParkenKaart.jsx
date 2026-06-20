@@ -1,6 +1,6 @@
 import ParkButton from "./ParkButton";
 
-// Lijst van beschikbare parken
+// Lijst van beschikbare parken om te volgen
 const PARKEN = ["Efteling", "Disneyland Paris", "Europa-Park", "Phantasialand", "Walibi Holland", "Toverland"];
 
 // Toont de parken volgen kaart met toggle knoppen

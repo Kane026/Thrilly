@@ -28,16 +28,16 @@ export default function Header() {
       <div className="flex items-center justify-between">
 
         {/* Logo links */}
-        <img src={logo} alt="Thrilly" className="h-8" />
+        <img src={logo} alt="Thrilly" className="h-8 cursor-pointer" onClick={() => navigate("/")} />
 
         {/* Navigatie gecentreerd */}
         <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-8 text-gray-600 font-medium">
-          <a href="/" className="flex items-center gap-1.5 hover:text-purple-600 transition-colors">
+          <button onClick={() => navigate("/")} className="flex items-center gap-1.5 hover:text-purple-600 transition-colors">
             🏠 Feed
-          </a>
-          <a href="#" className="flex items-center gap-1.5 hover:text-purple-600 transition-colors">
-            🔍 Zoeken
-          </a>
+          </button>
+          <button onClick={() => navigate("/parken")} className="flex items-center gap-1.5 hover:text-purple-600 transition-colors">
+            🎢 Parken
+          </button>
           <button onClick={() => navigate("/account")} className="flex items-center gap-1.5 hover:text-purple-600 transition-colors">
             👤 Profiel
           </button>
