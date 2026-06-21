@@ -1,9 +1,9 @@
-import { supabase } from "../supabase";
-import { useSession } from "../hooks/useSession";
+import { supabase } from "../../supabase";
+import { useSession } from "../../hooks/useSession";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/thrillylogo.jpg";
-import defaultAvatar from "../assets/default-avatar.png";
+import logo from "../../assets/thrillylogo.jpg";
+import defaultAvatar from "../../assets/default-avatar.png";
 
 export default function Header() {
   const { session } = useSession();

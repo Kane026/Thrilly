@@ -1,8 +1,8 @@
-import Header from "../components/Header";
+import Header from "../components/layout/Header";
 import { useState, useEffect } from "react";
 import { useSession } from "../hooks/useSession";
 import { supabase } from "../supabase";
-import Post from "../components/Post";
+import Post from "../components/feed/Post";
 
 export default function Home() {
   const [content, setContent] = useState("");

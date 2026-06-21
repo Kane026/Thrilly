@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
-import Header from "../components/Header";
-import ParkKaart from "../components/ParkKaart";
-import AttractieKaart from "../components/AttractieKaart";
+import Header from "../components/layout/Header";
+import ParkKaart from "../components/parken/ParkKaart";
+import AttractieKaart from "../components/parken/AttractieKaart";
 
 export default function ParkenPage() {
   const [user, setUser] = useState(null);
@@ -15,7 +15,7 @@ export default function ParkenPage() {
     laadGebruiker();
   }, []);
 
-  // Haal de gebruiker en zijn gevolgde parken op
+  // Haal de gebruiker en zijn gevolgde parken op 
   async function laadGebruiker() {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
@@ -65,16 +65,16 @@ export default function ParkenPage() {
   }
 
   // Vink een attractie aan of uit
-  async function toggleAttractie(attractieId) {
-    if (gedaan[attractieId]) {
+  async function toggleAttractie(attractieId) { 
+    if (gedaan[attractieId]) { 
       // Al gedaan, dus verwijderen
-      await supabase
+      await supabase 
         .from("gedaan")
-        .delete()
+        .delete() 
         .eq("user_id", user.id)
         .eq("attractie_id", attractieId);
 
-      const nieuwGedaan = { ...gedaan };
+      const nieuwGedaan = { ...gedaan }; 
       delete nieuwGedaan[attractieId];
       setGedaan(nieuwGedaan);
     } else {
@@ -93,7 +93,7 @@ export default function ParkenPage() {
 
   // Tel hoeveel attracties al gedaan zijn
   let aantalGedaan = 0;
-  for (let i = 0; i < attracties.length; i++) {
+  for (let i = 0; i < attracties.length; i++) { 
     if (gedaan[attracties[i].id]) {
       aantalGedaan++;
     }

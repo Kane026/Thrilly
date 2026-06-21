@@ -1,4 +1,4 @@
-import StatCard from "./StatCard";
+import StatCard from "../shared/StatCard";
 import AvatarUpload from "./AvatarUpload";
 
 // Toont de profielkaart met avatar, naam, email en statistieken

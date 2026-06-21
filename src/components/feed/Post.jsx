@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabase";
-import defaultAvatar from "../assets/default-avatar.png";
+import { supabase } from "../../supabase";
+import defaultAvatar from "../../assets/default-avatar.png";
 
 export default function Post({ user_id, content, date, onDelete, currentUserId, imageUrl, initiallikes, onToggleLike, initialComments, onCommentSubmit, session }) {
   const [profile, setProfile] = useState(null);
@@ -21,7 +21,7 @@ export default function Post({ user_id, content, date, onDelete, currentUserId, 
 
     // Kijk of ik deze persoon volg
     if (session?.sub && user_id !== session?.sub) {
-      supabase.from("volgers").select("id").eq("volger_id", session.sub).eq("gevolgde_id", user_id).single().then(({ data }) => {
+      supabase.from("volgers").select("id").eq("volger_id", session.sub).eq("gevolgde_id", user_id).maybeSingle().then(({ data }) => {
         if (data) setVolgIk(true);
       });
     }

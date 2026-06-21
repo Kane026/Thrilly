@@ -4,7 +4,7 @@
 // Als de gebruiker niet is ingelogd, wordt hij automatisch doorgestuurd naar /login.
 
 import { Navigate } from 'react-router';
-import { useSession } from '../hooks/useSession';
+import { useSession } from '../../hooks/useSession';
 
 export default function PrivateRoute({ children }) {
   const { session, loading } = useSession();

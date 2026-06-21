@@ -1,4 +1,4 @@
-import ParkButton from "./ParkButton";
+import ParkButton from "../shared/ParkButton";
 
 // Lijst van beschikbare parken om te volgen
 const PARKEN = ["Efteling", "Disneyland Paris", "Europa-Park", "Phantasialand", "Walibi Holland", "Toverland"];

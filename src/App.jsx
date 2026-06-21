@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
-import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./components/layout/PrivateRoute";
 import AccountPage from "./pages/AccountPage";
 import ParkenPage from "./pages/ParkenPage";
 import PublicProfile from "./pages/PublicProfile";

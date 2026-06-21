@@ -1,4 +1,4 @@
-import defaultAvatar from "../assets/default-avatar.png";
+import defaultAvatar from "../../assets/default-avatar.png";
 
 // Toont de profielfoto met een upload knop en optionele verwijder knop
 export default function AvatarUpload({ avatarUrl, onFileChange, onDelete }) {

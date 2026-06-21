@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
-import Header from "../components/Header";
-import ProfielKaart from "../components/ProfielKaart";
-import InstellingenKaart from "../components/InstellingenKaart";
-import ParkenKaart from "../components/ParkenKaart";
-import PrivacyKaart from "../components/PrivacyKaart";
+import Header from "../components/layout/Header";
+import ProfielKaart from "../components/profiel/ProfielKaart";
+import InstellingenKaart from "../components/profiel/InstellingenKaart";
+import ParkenKaart from "../components/profiel/ParkenKaart";
+import PrivacyKaart from "../components/profiel/PrivacyKaart";
 
 export default function AccountPage() {
   const [user, setUser] = useState(null);
