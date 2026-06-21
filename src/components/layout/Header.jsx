@@ -9,16 +9,18 @@ export default function Header() {
   const { session } = useSession();
   const [avatarUrl, setAvatarUrl] = useState(null);
   const navigate = useNavigate();
+  const [username, setUsername] = useState(null);
 
   useEffect(() => {
     const fetchAvatar = async () => {
       if (!session?.sub) return;
       const { data } = await supabase
         .from("profiles")
-        .select("avatar_url")
+        .select("avatar_url, username")
         .eq("user_id", session.sub)
         .single();
       if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+      if (data?.username) setUsername(data.username);
     };
     fetchAvatar();
   }, [session]);
@@ -51,7 +53,7 @@ export default function Header() {
             className="w-8 h-8 rounded-full object-cover cursor-pointer"
             onClick={() => navigate("/account")}
           />
-          <span className="text-gray-700 text-sm">{session?.email}</span>
+          <span className="text-gray-700 text-sm">{username ||session?.email}</span>
           <button
             onClick={() => supabase.auth.signOut()}
             className="flex items-center gap-1 border border-gray-300 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-100"

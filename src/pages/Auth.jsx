@@ -38,6 +38,12 @@ export default function Auth({ mode = 'login' }) {
     setLoading(false);
   };
 
+  async function signInWithGithub() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+    })
+  }
+
   return (
     // Achtergrond met paars/roze gradient
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-red-400">
@@ -92,6 +98,13 @@ export default function Auth({ mode = 'login' }) {
             {loading ? 'Even wachten...' : mode === 'login' ? 'Inloggen' : 'Account aanmaken'}
           </button>
         </form>
+
+        <button
+          onClick={signInWithGithub}
+          className="w-full mt-4 bg-gray-800 text-white font-semibold py-2.5 rounded-lg hover:bg-gray-900 transition"
+        >
+          Inloggen met GitHub
+        </button>
 
         {/* Links naar register/login */}
         <div className="mt-6 text-center text-sm">

@@ -10,11 +10,12 @@ export default function Home() {
   const [posts, setPosts] = useState([]);
   const [image, setImage] = useState(null);
   const { session, loading } = useSession();
+  const [label, setLabel] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("search") || "";
 
   const filteredPosts = posts.filter((post) =>
-  post.content?.toLowerCase().includes(query.toLowerCase())
+  post.content?.toLowerCase().includes(query.toLowerCase()) || post.label?.toLowerCase().includes(query.toLowerCase())
 );
 
   // Wacht tot session beschikbaar is voordat we posts ophalen
@@ -103,6 +104,7 @@ export default function Home() {
       user_id: session.sub,
       content: content,
       image_url: imageUrl,
+      label: label,
     });
 
     if (!error) {
@@ -168,6 +170,14 @@ export default function Home() {
               className="w-full bg-gray-50 rounded-lg p-3 text-gray-700 resize-none outline-none text-sm"
               placeholder="Deel je pretpark beleving..."
             />
+            <input
+             type = "text"
+             placeholder="Label (optioneel)"
+             value={label}
+             onChange={(e) => setLabel(e.target.value)}
+             className="w-full mt-2 p-2 border border-gray-300 rounded-lg text-sm"
+            />
+
             <div className="flex justify-between items-center mt-2">
               <input
                 type="file"
@@ -198,6 +208,7 @@ export default function Home() {
               initialComments={post.comments}
               onCommentSubmit={(commentContent) => handleCommentSubmit(post.id, commentContent)}
               session={session}
+              label={post.label}
             />
           ))}
         </div>

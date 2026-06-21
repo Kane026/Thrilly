@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase";
 import defaultAvatar from "../../assets/default-avatar.png";
 
-export default function Post({ user_id, content, date, onDelete, currentUserId, imageUrl, initiallikes, onToggleLike, initialComments, onCommentSubmit, session }) {
+export default function Post({ user_id, content, date, onDelete, currentUserId, imageUrl, initiallikes, onToggleLike, initialComments, onCommentSubmit, session, label }) {
   const [profile, setProfile] = useState(null);
   const [likes, setLikes] = useState(initiallikes || []);
   const [comments, setComments] = useState(initialComments || []);
@@ -63,6 +63,11 @@ export default function Post({ user_id, content, date, onDelete, currentUserId, 
           <p className="text-xs text-gray-400">{new Date(date).toLocaleDateString("nl-NL")}</p>
         </div>
       </div>
+
+      {/* Label tonen als die er is */}
+      {label && (
+        <p className="text-xs text-orange-600 font-medium mb-2">{label}</p>
+      )}
 
       {/* Post inhoud */}
       <p className="text-gray-700 mb-3">{content}</p>
