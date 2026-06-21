@@ -3,12 +3,19 @@ import { useState, useEffect } from "react";
 import { useSession } from "../hooks/useSession";
 import { supabase } from "../supabase";
 import Post from "../components/feed/Post";
+import { useSearchParams } from "react-router-dom";
 
 export default function Home() {
   const [content, setContent] = useState("");
   const [posts, setPosts] = useState([]);
   const [image, setImage] = useState(null);
   const { session, loading } = useSession();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get("search") || "";
+
+  const filteredPosts = posts.filter((post) =>
+  post.content?.toLowerCase().includes(query.toLowerCase())
+);
 
   // Wacht tot session beschikbaar is voordat we posts ophalen
   useEffect(() => {
@@ -143,6 +150,13 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="max-w-2xl mx-auto px-4 py-8">
+        <input
+          className="w-full mb-4 p-2 border border-gray-300 rounded-lg"
+          type="text"
+          placeholder="Search posts..."
+          value={query}
+          onChange={(e) => setSearchParams({ search: e.target.value })}
+        />
 
         {/* Post aanmaken */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
@@ -170,7 +184,7 @@ export default function Home() {
 
         {/* Lijst van posts */}
         <div className="flex flex-col gap-4">
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <Post
               key={post.id}
               user_id={post.user_id}
