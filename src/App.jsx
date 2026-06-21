@@ -4,6 +4,7 @@ import Auth from "./pages/Auth";
 import PrivateRoute from "./components/PrivateRoute";
 import AccountPage from "./pages/AccountPage";
 import ParkenPage from "./pages/ParkenPage";
+import PublicProfile from "./pages/PublicProfile";
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
       <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
       <Route path="/account" element={<PrivateRoute><AccountPage /></PrivateRoute>} />
       <Route path="/parken" element={<PrivateRoute><ParkenPage /></PrivateRoute>} />
+      <Route path="/profiel/:id" element={<PrivateRoute><PublicProfile /></PrivateRoute>} />
       <Route path="/login" element={<Auth mode="login" />} />
       <Route path="/register" element={<Auth mode="register" />} />
     </Routes>

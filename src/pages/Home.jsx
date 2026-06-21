@@ -10,16 +10,78 @@ export default function Home() {
   const [image, setImage] = useState(null);
   const { session, loading } = useSession();
 
-  const submitHandler = async (event) => {
+  // Wacht tot session beschikbaar is voordat we posts ophalen
+  useEffect(() => {
+    if (session) {
+      fetchPosts();
+    }
+  }, [session]);
+
+  async function fetchPosts() {
+    // Haal alle posts op
+    const { data: allePosts } = await supabase
+      .from("posts")
+      .select("*, likes(*), comments(*)")
+      .order("created_at", { ascending: false });
+
+    // Haal op wie ik volg
+    const { data: volgData } = await supabase
+      .from("volgers")
+      .select("gevolgde_id")
+      .eq("volger_id", session.sub);
+
+    // Maak een lijst van gevolgde user ids
+    const volgIds = [];
+    for (let i = 0; i < volgData.length; i++) {
+      volgIds.push(volgData[i].gevolgde_id);
+    }
+
+    // Haal privacy instellingen op
+    const { data: profielen } = await supabase
+      .from("profiles")
+      .select("user_id, posts_zichtbaar");
+
+    // Filter posts op basis van privacy instelling
+    const zichtbarePosts = [];
+    for (let i = 0; i < allePosts.length; i++) {
+      const post = allePosts[i];
+
+      // Eigen post altijd tonen
+      if (post.user_id === session.sub) {
+        zichtbarePosts.push(post);
+        continue;
+      }
+
+      // Zoek het profiel van de poster
+      let profiel = null;
+      for (let j = 0; j < profielen.length; j++) {
+        if (profielen[j].user_id === post.user_id) {
+          profiel = profielen[j];
+          break;
+        }
+      }
+
+      // Als posts alleen voor volgers zijn, check of ik hem volg
+      if (profiel && profiel.posts_zichtbaar === "volgers") {
+        if (volgIds.includes(post.user_id)) {
+          zichtbarePosts.push(post);
+        }
+      } else {
+        zichtbarePosts.push(post);
+      }
+    }
+
+    setPosts(zichtbarePosts);
+  }
+
+  async function submitHandler(event) {
     event.preventDefault();
 
     let imageUrl = null;
 
     if (image) {
       const fileName = `${session.sub}-${Date.now()}`;
-      const { error: uploadError } = await supabase.storage
-        .from("posts")
-        .upload(fileName, image);
+      const { error: uploadError } = await supabase.storage.from("posts").upload(fileName, image);
 
       if (uploadError) {
         console.error(uploadError);
@@ -41,48 +103,48 @@ export default function Home() {
       setImage(null);
       fetchPosts();
     }
-  };
+  }
 
-  const fetchPosts = async () => {
-    const { data, error } = await supabase.from("posts").select("*, likes(*),comments(*)").order("created_at", { ascending: false });
-    if (!error) setPosts(data);
-      console.log(error); // ← even checken wat de error zegt
-  };
+  async function handleDelete(id) {
+    // Zoek de post om de afbeelding URL te vinden
+    const post = posts.find((p) => p.id === id);
 
+    // Als er een afbeelding is, verwijder die eerst uit storage
+    if (post.image_url) {
+      const bestandsnaam = post.image_url.split("/").pop().split("?")[0];
+      await supabase.storage.from("posts").remove([bestandsnaam]);
+    }
 
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  const handleDelete = async (id) => {
+    // Verwijder daarna de post zelf
     const { error } = await supabase.from("posts").delete().eq("id", id);
     if (!error) fetchPosts();
-  };
-
-  const toggleLike = async (post) => {
-  const existing = post.likes.find((like) => like.user_id === session.sub);
-  if (existing) {
-    await supabase.from("likes").delete().eq("id", existing.id);
-  } else {
-    await supabase.from("likes").insert({ post_id: post.id, user_id: session.sub });
   }
-  fetchPosts();
-};
 
-const handleCommentSubmit = async (postId, commentContent) => {
-  const { error } = await supabase.from("comments").insert({
-    post_id: postId,
-    user_id: session.sub,
-    content: commentContent,
-  });
-  fetchPosts();
-};
+  async function toggleLike(post) {
+    const bestaand = post.likes.find((like) => like.user_id === session.sub);
+    if (bestaand) {
+      await supabase.from("likes").delete().eq("id", bestaand.id);
+    } else {
+      await supabase.from("likes").insert({ post_id: post.id, user_id: session.sub });
+    }
+    fetchPosts();
+  }
+
+  async function handleCommentSubmit(postId, commentContent) {
+    await supabase.from("comments").insert({
+      post_id: postId,
+      user_id: session.sub,
+      content: commentContent,
+    });
+    fetchPosts();
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="max-w-2xl mx-auto px-4 py-8">
+
+        {/* Post aanmaken */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
           <form onSubmit={submitHandler}>
             <textarea
@@ -105,6 +167,8 @@ const handleCommentSubmit = async (postId, commentContent) => {
             </div>
           </form>
         </div>
+
+        {/* Lijst van posts */}
         <div className="flex flex-col gap-4">
           {posts.map((post) => (
             <Post
@@ -114,17 +178,16 @@ const handleCommentSubmit = async (postId, commentContent) => {
               date={post.created_at}
               imageUrl={post.image_url}
               currentUserId={session?.sub}
-              onDelete={
-                post.user_id === session?.sub ? () => handleDelete(post.id) : undefined
-              }
+              onDelete={post.user_id === session?.sub ? () => handleDelete(post.id) : undefined}
               initiallikes={post.likes}
-              onToggleLike={() => toggleLike(post)} 
+              onToggleLike={() => toggleLike(post)}
               initialComments={post.comments}
-              onCommentSubmit={(commentContent) => handleCommentSubmit(post.id, commentContent)}  
+              onCommentSubmit={(commentContent) => handleCommentSubmit(post.id, commentContent)}
               session={session}
             />
           ))}
         </div>
       </div>
     </div>
-  )}
+  );
+}
