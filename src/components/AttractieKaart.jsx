@@ -1,4 +1,6 @@
-// Toont een attractie met een vinkje en datum wanneer je erin bent geweest
+import AttractieInfo from "./AttractieInfo";
+
+// Toont een attractie met een vinkje, info en datum
 export default function AttractieKaart({ attractie, is_gedaan, datum, onClick }) {
   let kaartKleur = "border-gray-100 hover:border-purple-200";
   let vinkjeKleur = "border-gray-300";
@@ -21,10 +23,15 @@ export default function AttractieKaart({ attractie, is_gedaan, datum, onClick })
       </div>
 
       <div>
+        {/* Naam van de attractie */}
         <p className={`font-medium ${tekstKleur}`}>{attractie.naam}</p>
-        {/* Datum tonen als de attractie gedaan is */}
+
+        {/* Fabrikant en beschrijving */}
+        <AttractieInfo fabrikant={attractie.fabrikant} beschrijving={attractie.beschrijving} />
+
+        {/* Datum wanneer de attractie gedaan is */}
         {is_gedaan && datum && (
-          <p className="text-xs text-purple-400 mt-0.5">
+          <p className="text-xs text-purple-400 mt-1">
             Gedaan op {new Date(datum).toLocaleDateString("nl-NL")}
           </p>
         )}
