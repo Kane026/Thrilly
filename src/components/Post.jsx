@@ -2,13 +2,19 @@ import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
 import defaultAvatar from "../assets/default-avatar.png";
 
-export default function Post({ user_id, content, date, onDelete, currentUserId, imageUrl, initiallikes, onToggleLike, session }) {
+export default function Post({ user_id, content, date, onDelete, currentUserId, imageUrl, initiallikes, onToggleLike, initialComments, onCommentSubmit,  session }) {
   const [profile, setProfile] = useState(null);
   const [likes, setLikes] = useState(initiallikes || []);
+  const [comments, setComments] = useState(initialComments || []);
+  const [commentContent, setCommentContent] = useState("");
 
   useEffect(() => {
     setLikes(initiallikes || []);
   }, [initiallikes]);
+
+  useEffect(() => {
+    setComments(initialComments || []);
+  }, [initialComments]);
 
   // Haal de username en avatar op van de poster
   useEffect(() => {
@@ -20,6 +26,13 @@ export default function Post({ user_id, content, date, onDelete, currentUserId, 
       .single()
       .then(({ data }) => setProfile(data));
   }, [user_id]);
+
+  const submitComment = async () => {
+    if (!commentContent) return;
+    await onCommentSubmit(commentContent);
+    setCommentContent("");
+  };
+
 
   return (
     <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
@@ -60,6 +73,31 @@ export default function Post({ user_id, content, date, onDelete, currentUserId, 
       )}
 
     </div>
+      <div className="mt-4">
+  <h4 className="font-semibold text-gray-800 mb-2">Reacties</h4>
+
+  {comments.map((comment) => (
+    <div key={comment.id} className="text-sm text-gray-700 mb-1">
+      <span className="font-semibold">{comment.profiles?.username || "Gebruiker"}</span>: {comment.content}
+    </div>
+  ))}
+
+  <div className="flex gap-2 mt-2">
+    <input
+      type="text"
+      value={commentContent}
+      onChange={(e) => setCommentContent(e.target.value)}
+      placeholder="Schrijf een reactie..."
+      className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1 text-sm outline-none"
+    />
+    <button
+      onClick={submitComment}
+      className="px-3 py-1 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700"
+    >
+      Stuur
+    </button>
+  </div>
+</div>
     </div>
   );
 }

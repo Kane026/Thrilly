@@ -44,7 +44,7 @@ export default function Home() {
   };
 
   const fetchPosts = async () => {
-    const { data, error } = await supabase.from("posts").select("*, likes(*)").order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("posts").select("*, likes(*),comments(*)").order("created_at", { ascending: false });
     if (!error) setPosts(data);
       console.log(error); // ← even checken wat de error zegt
   };
@@ -67,6 +67,15 @@ export default function Home() {
   } else {
     await supabase.from("likes").insert({ post_id: post.id, user_id: session.sub });
   }
+  fetchPosts();
+};
+
+const handleCommentSubmit = async (postId, commentContent) => {
+  const { error } = await supabase.from("comments").insert({
+    post_id: postId,
+    user_id: session.sub,
+    content: commentContent,
+  });
   fetchPosts();
 };
 
@@ -110,10 +119,12 @@ export default function Home() {
               }
               initiallikes={post.likes}
               onToggleLike={() => toggleLike(post)} 
+              initialComments={post.comments}
+              onCommentSubmit={(commentContent) => handleCommentSubmit(post.id, commentContent)}  
+              session={session}
             />
           ))}
         </div>
       </div>
     </div>
-  );
-}
+  )}
