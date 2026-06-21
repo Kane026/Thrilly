@@ -44,9 +44,12 @@ export default function Home() {
   };
 
   const fetchPosts = async () => {
-    const { data, error } = await supabase.from("posts").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("posts").select("*, likes(*)").order("created_at", { ascending: false });
     if (!error) setPosts(data);
+      console.log(error); // ← even checken wat de error zegt
   };
+
+
 
   useEffect(() => {
     fetchPosts();
@@ -56,6 +59,16 @@ export default function Home() {
     const { error } = await supabase.from("posts").delete().eq("id", id);
     if (!error) fetchPosts();
   };
+
+  const toggleLike = async (post) => {
+  const existing = post.likes.find((like) => like.user_id === session.sub);
+  if (existing) {
+    await supabase.from("likes").delete().eq("id", existing.id);
+  } else {
+    await supabase.from("likes").insert({ post_id: post.id, user_id: session.sub });
+  }
+  fetchPosts();
+};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -95,6 +108,8 @@ export default function Home() {
               onDelete={
                 post.user_id === session?.sub ? () => handleDelete(post.id) : undefined
               }
+              initiallikes={post.likes}
+              onToggleLike={() => toggleLike(post)} 
             />
           ))}
         </div>

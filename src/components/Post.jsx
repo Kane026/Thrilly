@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import { supabase } from "../supabase";
 import defaultAvatar from "../assets/default-avatar.png";
 
-export default function Post({ user_id, content, date, onDelete, currentUserId, imageUrl }) {
+export default function Post({ user_id, content, date, onDelete, currentUserId, imageUrl, initiallikes, onToggleLike, session }) {
   const [profile, setProfile] = useState(null);
+  const [likes, setLikes] = useState(initiallikes || []);
+
+  useEffect(() => {
+    setLikes(initiallikes || []);
+  }, [initiallikes]);
 
   // Haal de username en avatar op van de poster
   useEffect(() => {
@@ -40,11 +45,21 @@ export default function Post({ user_id, content, date, onDelete, currentUserId, 
         <img src={imageUrl} alt="post afbeelding" className="mt-3 rounded-lg w-full object-cover" />
       )}
 
+      <div className="flex items-center gap-4 mt-3">
+        <button
+          onClick={onToggleLike}
+          className="px-4 py-1 rounded-lg text-sm font-medium bg-purple-600 text-white hover:bg-purple-700"
+        >
+          {likes.some((like) => like.user_id === session?.sub) ? "Unlike" : "Like"} · {likes.length}
+        </button>
+
       {currentUserId === user_id && (
         <button onClick={onDelete} className="mt-3 text-red-400 text-xs hover:text-red-600">
           Verwijderen
         </button>
       )}
+
+    </div>
     </div>
   );
 }
